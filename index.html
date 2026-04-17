@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroGames - Desafío de Percepción</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Custom Tailwind config if needed */
+        .selection-custom::selection {
+            background-color: #06b6d4; /* cyan-500 */
+            color: white;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-slate-900 text-slate-100 font-sans selection-custom flex flex-col">
+
+    <main class="flex-grow flex items-center justify-center p-4 relative overflow-hidden" id="app-container">
+        
+        <!-- Timer Display (Absolute positioned) -->
+        <div id="timer-display" class="hidden absolute top-4 right-4 flex items-center gap-2 bg-slate-800 px-4 py-2 rounded-full border border-slate-600 shadow-lg font-mono text-cyan-400 z-50">
+            <i data-lucide="clock" class="w-4 h-4"></i>
+            <span id="timer-value">0.00s</span>
+        </div>
+
+        <!-- ================= FASE: INTRO ================= -->
+        <section id="phase-intro" class="max-w-2xl w-full text-center space-y-8 animate-fade-in">
+            <div class="inline-block p-4 bg-slate-800 rounded-2xl mb-4 border border-slate-700 shadow-2xl">
+                <i data-lucide="brain" class="text-cyan-400 mx-auto w-16 h-16"></i>
+            </div>
+            <h1 class="text-5xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                NeuroGames
+            </h1>
+            <h2 class="text-2xl text-slate-300 font-light">Desafío de Percepción y Atención Selectiva</h2>
+            
+            <div class="bg-slate-800/50 p-6 rounded-xl border border-slate-700/50 backdrop-blur-sm max-w-lg mx-auto text-left space-y-4">
+                <p class="text-slate-300"><strong class="text-cyan-400">Objetivo:</strong> Te enfrentarás a 4 módulos diseñados para medir tu capacidad de procesamiento visual.</p>
+                <p class="text-slate-300"><strong class="text-cyan-400">Instrucciones:</strong> Observa cada imagen y selecciona la respuesta correcta lo más rápido posible. El cronómetro está activo.</p>
+                <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Basado en Psicología Experimental y Gestalt</p>
+            </div>
+
+            <button onclick="setPhase('m1_play')" class="group relative inline-flex items-center justify-center gap-3 px-8 py-4 bg-cyan-500 text-slate-900 font-bold text-lg rounded-full hover:bg-cyan-400 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_-5px_rgba(34,211,238,0.5)]">
+                <i data-lucide="play" class="fill-current w-6 h-6"></i>
+                INICIAR PROTOTIPO
+            </button>
+        </section>
+
+        <!-- ================= FASE: M1 PLAY ================= -->
+        <section id="phase-m1_play" class="hidden max-w-2xl w-full text-center space-y-8 animate-fade-in relative pt-12">
+            <div>
+                <span class="text-cyan-400 font-bold tracking-widest text-sm uppercase">Módulo 1: Figura-Fondo</span>
+                <h2 class="text-3xl font-semibold mt-2">¿Qué ves primero?</h2>
+            </div>
+            
+            <!-- Rubin Vase SVG -->
+            <svg viewBox="0 0 300 300" class="w-full max-w-sm mx-auto bg-slate-900 rounded-xl shadow-2xl border-4 border-slate-700 overflow-hidden">
+                <path d="M 40 20 L 260 20 L 250 40 L 230 60 L 200 80 L 180 100 L 170 115 L 185 130 L 195 145 L 180 155 L 175 165 L 185 175 L 170 180 L 180 190 L 175 200 L 195 220 L 190 240 L 180 260 L 220 270 L 260 280 L 40 280 L 80 270 L 120 260 L 110 240 L 105 220 L 125 200 L 120 190 L 130 180 L 115 175 L 125 165 L 120 155 L 105 145 L 115 130 L 130 115 L 120 100 L 100 80 L 70 60 L 50 40 Z" 
+                      fill="#f8fafc" stroke="#f8fafc" stroke-width="8" stroke-linejoin="round" stroke-linecap="round" />
+            </svg>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+                <button onclick="recordTimeAndAdvance('m1', 'm1_explain')" class="px-8 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg font-semibold transition-colors border border-slate-500">
+                    VEO LA COPA
+                </button>
+                <button onclick="recordTimeAndAdvance('m1', 'm1_explain')" class="px-8 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg font-semibold transition-colors border border-slate-500">
+                    VEO ROSTROS
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= FASE: M1 EXPLICACIÓN ================= -->
+        <section id="phase-m1_explain" class="hidden max-w-2xl w-full space-y-6 animate-fade-in text-left bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-2xl">
+            <div class="flex items-center gap-4 border-b border-slate-700 pb-4">
+                <i data-lucide="brain" class="text-cyan-400 w-8 h-8"></i>
+                <h2 class="text-2xl font-bold">Análisis de Percepción</h2>
+            </div>
+            <div class="space-y-4 text-lg text-slate-300">
+                <p><strong class="text-white block text-xl mb-1">Organización Gestalt</strong> El sistema visual procesa bordes y contrastes para decidir qué objeto tiene prioridad atencional.</p>
+                <p>La segregación figura-fondo es un principio fundamental que permite distinguir objetos en entornos complejos. Tu cerebro no puede percibir ambas imágenes simultáneamente, debe alternar.</p>
+            </div>
+            <button onclick="setPhase('m2_play')" class="w-full mt-6 flex items-center justify-center gap-2 px-6 py-4 bg-cyan-500 text-slate-900 font-bold rounded-lg hover:bg-cyan-400 transition-colors">
+                CONTINUAR AL MÓDULO 2 <i data-lucide="chevron-right" class="w-5 h-5"></i>
+            </button>
+        </section>
+
+        <!-- ================= FASE: M2 PLAY ================= -->
+        <section id="phase-m2_play" class="hidden max-w-3xl w-full text-center space-y-8 animate-fade-in relative pt-12">
+            <div>
+                <span class="text-cyan-400 font-bold tracking-widest text-sm uppercase">Módulo 2: Matriz de Semejanza</span>
+                <h2 class="text-3xl font-semibold mt-2">Localiza los 3 intrusos</h2>
+                <p class="text-slate-400 mt-2">Encuéntralos lo más rápido posible.</p>
+            </div>
+            
+            <div class="bg-white p-8 rounded-2xl shadow-xl inline-block mx-auto border-4 border-slate-700">
+                <div id="m2-grid" class="grid grid-cols-4 gap-6">
+                    <!-- Grid generada por JS -->
+                </div>
+            </div>
+
+            <div class="text-xl font-bold text-slate-300">
+                Encontrados: <span id="m2-found-count" class="text-cyan-400">0 / 3</span>
+            </div>
+        </section>
+
+        <!-- ================= FASE: M2 EXPLICACIÓN ================= -->
+        <section id="phase-m2_explain" class="hidden max-w-2xl w-full space-y-6 animate-fade-in text-left bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-2xl">
+            <div class="flex items-center gap-4 border-b border-slate-700 pb-4">
+                <i data-lucide="brain" class="text-cyan-400 w-8 h-8"></i>
+                <h2 class="text-2xl font-bold">Captura Atencional</h2>
+            </div>
+            <div class="space-y-4 text-lg text-slate-300">
+                <p><strong class="text-white block text-xl mb-1">Homogeneidad</strong> El cerebro agrupa automáticamente elementos que comparten color, forma o tamaño basándose en la Ley de Semejanza.</p>
+                <p><strong class="text-white block text-xl mb-1">Atención Exógena</strong> Cualquier estímulo anómalo rompe esta ley y "dispara" tu atención de forma automática (bottom-up), obligándote a mirar al intruso.</p>
+            </div>
+            <button onclick="startM3()" class="w-full mt-6 flex items-center justify-center gap-2 px-6 py-4 bg-cyan-500 text-slate-900 font-bold rounded-lg hover:bg-cyan-400 transition-colors">
+                CONTINUAR AL MÓDULO 3 <i data-lucide="chevron-right" class="w-5 h-5"></i>
+            </button>
+        </section>
+
+        <!-- ================= FASE: M3 PLAY ================= -->
+        <section id="phase-m3_play" class="hidden max-w-2xl w-full text-center space-y-8 animate-fade-in relative pt-12">
+            <div>
+                <span class="text-cyan-400 font-bold tracking-widest text-sm uppercase">Módulo 3: Interferencia Stroop</span>
+                <h2 class="text-3xl font-semibold mt-2">Di el COLOR de la tinta</h2>
+                <p class="text-rose-400 font-bold mt-2 bg-rose-500/10 inline-block px-4 py-1 rounded">REGLA: Ignora el texto escrito.</p>
+            </div>
+            
+            <div class="h-48 flex items-center justify-center">
+                <h1 id="m3-word-display" class="text-7xl font-black uppercase tracking-widest drop-shadow-lg">
+                    <!-- Palabra generada por JS -->
+                </h1>
+            </div>
+
+            <div id="m3-buttons-container" class="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                <!-- Botones generados por JS -->
+            </div>
+            <div id="m3-progress" class="text-sm text-slate-500">Palabra 1 de 4</div>
+        </section>
+
+        <!-- ================= FASE: M3 EXPLICACIÓN ================= -->
+        <section id="phase-m3_explain" class="hidden max-w-2xl w-full space-y-6 animate-fade-in text-left bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-2xl">
+            <div class="flex items-center gap-4 border-b border-slate-700 pb-4">
+                <i data-lucide="brain" class="text-cyan-400 w-8 h-8"></i>
+                <h2 class="text-2xl font-bold">Interferencia Semántica</h2>
+            </div>
+            <div class="space-y-4 text-lg text-slate-300">
+                <div class="flex items-center gap-4 bg-slate-900 p-4 rounded-lg">
+                    <div class="text-4xl font-black text-rose-500">70%</div>
+                    <div class="text-sm font-semibold uppercase tracking-wide">De Carga<br/>Cognitiva Extra</div>
+                </div>
+                <p><strong class="text-white block text-xl mb-1">Control Inhibitorio</strong> La lectura es un proceso tan automatizado en adultos que interfiere directamente con el reconocimiento del color. Tu lóbulo frontal debe esforzarse activamente para inhibir (bloquear) el significado de la palabra.</p>
+            </div>
+            <button onclick="setPhase('m4_play')" class="w-full mt-6 flex items-center justify-center gap-2 px-6 py-4 bg-cyan-500 text-slate-900 font-bold rounded-lg hover:bg-cyan-400 transition-colors">
+                CONTINUAR AL MÓDULO 4 <i data-lucide="chevron-right" class="w-5 h-5"></i>
+            </button>
+        </section>
+
+        <!-- ================= FASE: M4 PLAY ================= -->
+        <section id="phase-m4_play" class="hidden max-w-2xl w-full text-center space-y-8 animate-fade-in relative pt-12">
+            <div>
+                <span class="text-cyan-400 font-bold tracking-widest text-sm uppercase">Módulo 4: Ilusión de Adelson</span>
+                <h2 class="text-3xl font-semibold mt-2">¿Qué cuadro es más oscuro?</h2>
+                <p class="text-slate-400 mt-2">Analiza el cuadro A y el cuadro B bajo la sombra.</p>
+            </div>
+            
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/be/Checker_shadow_illusion.svg" 
+                 alt="Ilusión de Adelson" 
+                 class="w-full max-w-sm mx-auto rounded-xl shadow-2xl border-4 border-slate-700 object-contain bg-white"
+                 onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Checker_shadow_illusion.svg/800px-Checker_shadow_illusion.svg.png';" />
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mt-8">
+                <button onclick="recordTimeAndAdvance('m4', 'results')" class="px-8 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg font-semibold transition-colors border border-slate-500">
+                    A ES MÁS OSCURO
+                </button>
+                <button onclick="recordTimeAndAdvance('m4', 'results')" class="px-8 py-3 bg-slate-700 hover:bg-slate-600 rounded-lg font-semibold transition-colors border border-slate-500">
+                    SON IGUALES
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= FASE: RESULTADOS ================= -->
+        <section id="phase-results" class="hidden max-w-3xl w-full space-y-8 animate-fade-in py-12">
+            <div class="text-center">
+                <h2 class="text-4xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Resultados del Prototipo</h2>
+                <p class="text-slate-400 mt-2">Tus tiempos de reacción por módulo (en segundos)</p>
+            </div>
+
+            <div class="bg-slate-800 p-8 rounded-2xl border border-slate-700 shadow-2xl space-y-6">
+                
+                <div id="results-bars-container" class="space-y-6">
+                    <!-- Barras de resultados generadas por JS -->
+                </div>
+                
+                <div class="mt-8 p-4 bg-slate-900 rounded-xl border border-slate-700 text-slate-300 text-sm">
+                    <strong class="text-rose-400">Análisis:</strong> El Módulo 3 (Stroop) suele presentar el mayor tiempo de reacción debido a la interferencia cognitiva severa entre la ruta léxica y el reconocimiento visual del color.
+                </div>
+            </div>
+
+            <!-- Referencias APA 7 -->
+            <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+                <div class="flex items-center gap-2 mb-4 text-cyan-400">
+                    <i data-lucide="book-open" class="w-5 h-5"></i>
+                    <h3 class="text-lg font-bold">Referencias Científicas (APA 7)</h3>
+                </div>
+                <ul class="space-y-4 text-sm text-slate-400 pl-4 list-none">
+                    <li class="pl-4 -indent-4">
+                        Adelson, E. H. (2000). Lightness Perception and Lightness Illusions. En M. Gazzaniga (Ed.), <em>The New Cognitive Neurosciences</em> (2a ed., pp. 339–351). MIT Press. <a href="https://persci.mit.edu/pub_pdfs/lightness_chapter.pdf" target="_blank" rel="noreferrer" class="text-blue-400 hover:underline">https://persci.mit.edu/pub_pdfs/lightness_chapter.pdf</a>
+                    </li>
+                    <li class="pl-4 -indent-4">
+                        Stroop, J. R. (1935). Studies of interference in serial verbal reactions. <em>Journal of Experimental Psychology</em>, <em>18</em>(6), 643–662. <a href="https://doi.org/10.1037/h0054651" target="_blank" rel="noreferrer" class="text-blue-400 hover:underline">https://doi.org/10.1037/h0054651</a>
+                    </li>
+                    <li class="pl-4 -indent-4">
+                        Wagemans, J., Elder, J. H., Kubovy, M., Palmer, S. E., Peterson, M. A., Singh, M., & von der Heydt, R. (2012). A century of Gestalt psychology in visual perception: I. Perceptual grouping and figure-ground organization. <em>Psychological Bulletin</em>, <em>138</em>(6), 1172–1217. <a href="https://doi.org/10.1037/a0029333" target="_blank" rel="noreferrer" class="text-blue-400 hover:underline">https://doi.org/10.1037/a0029333</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="text-center">
+                <button onclick="resetGame()" class="inline-flex items-center gap-2 px-6 py-3 bg-slate-700 text-white font-bold rounded-full hover:bg-slate-600 transition-colors border border-slate-500">
+                    <i data-lucide="refresh-ccw" class="w-5 h-5"></i>
+                    REINICIAR JUEGO
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- LOGIC SCRIPT -->
+    <script>
+        // Inicializar iconos de Lucide
+        lucide.createIcons();
+
+        // --- ESTADO GLOBAL ---
+        let currentPhase = 'intro';
+        let startTime = 0;
+        let timerInterval = null;
+        let times = { m1: 0, m2: 0, m3: 0, m4: 0 };
+        
+        // Estado Módulo 2
+        let m2Found = [];
+        const m2GridData = [
+            { id: 0, type: 'circle', color: 'blue' }, { id: 1, type: 'circle', color: 'blue' }, { id: 2, type: 'circle', color: 'blue' }, { id: 3, type: 'triangle', color: 'black', isIntruder: true },
+            { id: 4, type: 'circle', color: 'blue' }, { id: 5, type: 'circle', color: 'blue' }, { id: 6, type: 'circle', color: 'blue' }, { id: 7, type: 'circle', color: 'blue' },
+            { id: 8, type: 'circle', color: 'blue' }, { id: 9, type: 'circle', color: 'black', isIntruder: true }, { id: 10, type: 'circle', color: 'blue' }, { id: 11, type: 'circle', color: 'blue' },
+            { id: 12, type: 'triangle', color: 'blue', isIntruder: true }, { id: 13, type: 'circle', color: 'blue' }, { id: 14, type: 'circle', color: 'blue' }, { id: 15, type: 'circle', color: 'blue' }
+        ];
+
+        // Estado Módulo 3
+        let m3Trials = [];
+        let m3CurrentTrial = 0;
+        const stroopColors = [
+            { name: 'ROJO', hex: '#ef4444' },
+            { name: 'VERDE', hex: '#22c55e' },
+            { name: 'AZUL', hex: '#3b82f6' },
+            { name: 'AMARILLO', hex: '#eab308' }
+        ];
+
+        // --- SISTEMA DE FASES ---
+        function setPhase(newPhase) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('section').forEach(el => el.classList.add('hidden'));
+            
+            // Mostrar la nueva fase
+            const targetEl = document.getElementById(`phase-${newPhase}`);
+            if(targetEl) targetEl.classList.remove('hidden');
+
+            // Manejo del temporizador
+            if (newPhase.includes('_play')) {
+                startTimer();
+            } else {
+                stopTimer();
+            }
+
+            // Preparaciones específicas de fase
+            if (newPhase === 'm2_play') renderM2();
+            if (newPhase === 'results') renderResults();
+
+            currentPhase = newPhase;
+            window.scrollTo(0, 0); // Ir al inicio de la pantalla
+        }
+
+        // --- CRONÓMETRO ---
+        function startTimer() {
+            startTime = Date.now();
+            document.getElementById('timer-display').classList.remove('hidden');
+            
+            if(timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                const elapsedMs = Date.now() - startTime;
+                document.getElementById('timer-value').innerText = (elapsedMs / 1000).toFixed(2) + 's';
+            }, 10);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            document.getElementById('timer-display').classList.add('hidden');
+        }
+
+        function recordTimeAndAdvance(moduleKey, nextPhase) {
+            const finalTime = (Date.now() - startTime) / 1000;
+            times[moduleKey] = finalTime;
+            setPhase(nextPhase);
+        }
+
+        // --- MÓDULO 2 LOGICA ---
+        function renderM2() {
+            const gridContainer = document.getElementById('m2-grid');
+            gridContainer.innerHTML = '';
+            
+            m2GridData.forEach(item => {
+                const btn = document.createElement('button');
+                const isFound = m2Found.includes(item.id);
+                
+                btn.className = `w-20 h-20 flex items-center justify-center transition-all ${isFound ? 'scale-90 opacity-50 ring-4 ring-green-500 rounded-full' : 'hover:scale-110'}`;
+                btn.disabled = isFound;
+                btn.onclick = () => handleM2Click(item.id);
+
+                const fillColor = item.color === 'blue' ? '#3b82f6' : '#1e293b';
+                
+                let svgContent = '';
+                if (item.type === 'circle') {
+                    svgContent = `<circle cx="50" cy="50" r="45" fill="${fillColor}" />`;
+                } else if (item.type === 'triangle') {
+                    svgContent = `<polygon points="50,5 95,90 5,90" fill="${fillColor}" />`;
+                }
+
+                btn.innerHTML = `<svg viewBox="0 0 100 100" class="w-16 h-16">${svgContent}</svg>`;
+                gridContainer.appendChild(btn);
+            });
+
+            document.getElementById('m2-found-count').innerText = `${m2Found.length} / 3`;
+        }
+
+        function handleM2Click(itemId) {
+            const item = m2GridData.find(i => i.id === itemId);
+            if (item && item.isIntruder && !m2Found.includes(item.id)) {
+                m2Found.push(item.id);
+                renderM2(); // Re-renderizar la grilla para aplicar estilos
+
+                if (m2Found.length === 3) {
+                    recordTimeAndAdvance('m2', 'm2_explain');
+                }
+            }
+        }
+
+        // --- MÓDULO 3 LÓGICA ---
+        function startM3() {
+            // Generar 4 ensayos incongruentes
+            m3Trials = [];
+            for (let i = 0; i < 4; i++) {
+                let wordIdx = Math.floor(Math.random() * 4);
+                let colorIdx = Math.floor(Math.random() * 4);
+                while (colorIdx === wordIdx) colorIdx = Math.floor(Math.random() * 4);
+                m3Trials.push({ 
+                    text: stroopColors[wordIdx].name, 
+                    colorHex: stroopColors[colorIdx].hex, 
+                    correctColorName: stroopColors[colorIdx].name 
+                });
+            }
+            m3CurrentTrial = 0;
+            renderStroopTrial();
+            setPhase('m3_play');
+        }
+
+        function renderStroopTrial() {
+            const trial = m3Trials[m3CurrentTrial];
+            
+            // Elemento de texto grande
+            const wordDisplay = document.getElementById('m3-word-display');
+            wordDisplay.innerText = trial.text;
+            wordDisplay.style.color = trial.colorHex;
+
+            // Elemento de progreso
+            document.getElementById('m3-progress').innerText = `Palabra ${m3CurrentTrial + 1} de 4`;
+
+            // Botones de colores
+            const btnContainer = document.getElementById('m3-buttons-container');
+            btnContainer.innerHTML = '';
+            
+            stroopColors.forEach(color => {
+                const btn = document.createElement('button');
+                btn.className = "py-4 text-xl font-bold rounded-xl border-2 border-slate-600 bg-slate-800 hover:bg-slate-700 transition-colors flex items-center justify-center gap-2";
+                btn.onclick = () => handleStroopClick(color.name);
+                
+                btn.innerHTML = `
+                    <span class="w-4 h-4 rounded-full" style="background-color: ${color.hex}"></span>
+                    ${color.name}
+                `;
+                btnContainer.appendChild(btn);
+            });
+        }
+
+        function handleStroopClick(colorName) {
+            const isCorrect = colorName === m3Trials[m3CurrentTrial].correctColorName;
+            if (isCorrect) {
+                if (m3CurrentTrial < 3) {
+                    m3CurrentTrial++;
+                    renderStroopTrial();
+                } else {
+                    recordTimeAndAdvance('m3', 'm3_explain');
+                }
+            } else {
+                // Penalización de tiempo: restarle al startTime para que el tiempo transcurrido crezca en 500ms
+                startTime -= 500;
+                
+                // Efecto visual de error breve
+                const wordDisplay = document.getElementById('m3-word-display');
+                const oldColor = wordDisplay.style.color;
+                wordDisplay.style.opacity = '0.5';
+                setTimeout(() => { wordDisplay.style.opacity = '1'; }, 150);
+            }
+        }
+
+        // --- RESULTADOS LÓGICA ---
+        function renderResults() {
+            const container = document.getElementById('results-bars-container');
+            container.innerHTML = '';
+
+            const resultsData = [
+                { label: 'M1: Figura-Fondo', time: times.m1, colorClass: 'bg-cyan-400' },
+                { label: 'M2: Semejanza', time: times.m2, colorClass: 'bg-cyan-400' },
+                { label: 'M3: Stroop', time: times.m3, colorClass: 'bg-rose-500' },
+                { label: 'M4: Constancia (Adelson)', time: times.m4, colorClass: 'bg-cyan-400' }
+            ];
+
+            resultsData.forEach(mod => {
+                // Límite de 6 segundos para el 100% visual de la barra
+                const widthPercent = Math.min((mod.time / 6) * 100, 100);
+                
+                const row = document.createElement('div');
+                row.className = "flex items-center gap-4";
+                row.innerHTML = `
+                    <div class="w-32 text-right text-sm font-semibold text-slate-300">${mod.label}</div>
+                    <div class="flex-grow bg-slate-900 rounded-full h-8 overflow-hidden relative">
+                        <div class="h-full ${mod.colorClass} rounded-full flex items-center px-4 transition-all duration-1000 ease-out" style="width: ${widthPercent}%">
+                            <span class="text-slate-900 font-bold text-sm ml-auto">${mod.time.toFixed(2)}s</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(row);
+            });
+        }
+
+        // --- REINICIAR ---
+        function resetGame() {
+            times = { m1: 0, m2: 0, m3: 0, m4: 0 };
+            m2Found = [];
+            setPhase('intro');
+        }
+
+    </script>
+</body>
+</html>
